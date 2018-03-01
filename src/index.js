@@ -23,6 +23,10 @@ import sh from 'shelljs';
       '--project-dir [path]',
       'specific directory to search for elm-package.json or to create it (if different from Elm file location)'
     )
+    .option(
+      '--input-filename [file]',
+      'file to read instead of args'
+    )
     .parse(process.argv);
 
   // run-elm expects one or more arguments, so exit if no arguments given
@@ -35,7 +39,10 @@ import sh from 'shelljs';
   const rawUserModuleFileName = program.args[0];
   const outputName = program.outputName;
   const rawProjectDir = program.projectDir;
-  const argsToOutput = program.args.slice(1);
+  if (program.inputFilename)
+    argsToOutput = await readFile(program.inputFilename);
+  else
+    const argsToOutput = program.args.slice(1);
 
   // extract key paths
   const timestamp = +new Date();
